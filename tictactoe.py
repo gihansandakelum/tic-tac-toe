@@ -199,7 +199,7 @@ def main() -> None:
                     computer_move(board, result['opponent'])
                     print(f"You: {result['user']} | Computer: {result['opponent']}")
 
-                    if check_winner(board, result['computer']):
+                    if check_winner(board, result['opponent']):
                         print("🎉 Computer Won! 🎉")
                         break
                     result['next_player'] = "USER"
