@@ -38,13 +38,13 @@ Here’s how the game looks in the terminal:
 
 - Enter a number from 1 to 9 to place your symbol on the board.
 - Board positions:
-
+```
 1 | 2 | 3
 ---------
 4 | 5 | 6
 ---------
 7 | 8 | 9
-
+```
 - Align three of your symbols vertically, horizontally, or diagonally to win.
 - If all positions are filled and no one wins, the game ends in a draw.
 - After each game, you can choose to play again.
