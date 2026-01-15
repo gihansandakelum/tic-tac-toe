@@ -178,8 +178,6 @@ def check_winner(board: Board, symbol: str) -> bool:
     return False
 
 
-        
-
 def main() -> None:
     """
     Main loop to run the Tic-Tac-Toe game.
@@ -240,10 +238,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-# In[ ]:
-
 
 
 
