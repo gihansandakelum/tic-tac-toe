@@ -37,10 +37,26 @@ def free_fields(board: Board) -> List[int]:
     return [int(cell) for row in board for cell in row if cell not in ("X", "O")]
 
 
+def game_opponent() -> str:
+    """
+    User can call the game opponent.
+    """
+    while True:
+        user_game_mode = input("Do you want to play with Computer(C) or with Friend(F): ").strip().upper()
+        if user_game_mode =="C":
+            return "COMPUTER"
+        if user_game_mode =="F":
+            return "FRIEND"
+        print("Invalid choice. Type C or F.")
+
+
 def toss() -> dict:
     """
-    User can call heads or tails before the toss.
+    User calls Heads or Tails before the toss.
+    Returns a dictionary containing toss result and player assignments.
     """
+    user_game_opponent = game_opponent()
+
     while True:
         user_call = input("Call it! Heads (H) or Tails (T): ").strip().upper()
         if user_call in ("H", "T"):
@@ -53,13 +69,26 @@ def toss() -> dict:
         time.sleep(0.3)
     print()
 
-    coin = choice(["H", "T"])
+    coin = choice(("H", "T"))
+
     if coin == user_call:
         print(f"🎉 Coin landed {coin}! You won the toss.")
-        return {"toss_winner": "USER", "next_player": "USER", "user": "X", "computer": "O"}
+        return {
+            "toss_winner": "USER",
+            "next_player": "USER",
+            "game_opponent": user_game_opponent,
+            "user": "X",
+            "opponent": "O",
+        }
     else:
-        print(f"🎉 Coin landed {coin}! Computer won the toss.")
-        return {"toss_winner": "COMPUTER", "next_player": "COMPUTER", "user": "O", "computer": "X"}
+        print(f"🎉 Coin landed {coin}! {user_game_opponent} won the toss.")
+        return {
+            "toss_winner": user_game_opponent,
+            "next_player": user_game_opponent,
+            "game_opponent": user_game_opponent,
+            "user": "O",
+            "opponent": "X",
+        }
 
 
 def computer_move(board: Board, symbol: str) -> None:
@@ -95,11 +124,38 @@ def user_move(board: Board, symbol: str) -> None:
         if move in free_fields(board):
             row, col = (move - 1) // 3, (move - 1) % 3
             board[row][col] = symbol
+            print("You played:")
             display_board(board)
             break
         else:
             print("This position is already taken or invalid.")
 
+            
+def friend_move(board: Board, symbol: str) -> None:
+    """
+    Prompts the user to make a move.
+
+    Args:
+        board (Board): Current board.
+        symbol (str): User's symbol ('X' or 'O').
+    """
+    while True:
+        try:
+            move = int(input("Input friend's move (1-9): "))
+        except ValueError:
+            print("Invalid input. Enter a number between 1 and 9.")
+            continue
+
+        if move in free_fields(board):
+            row, col = (move - 1) // 3, (move - 1) % 3
+            board[row][col] = symbol
+            print("Friend played:")
+            display_board(board)
+            break
+        else:
+            print("This position is already taken or invalid.")
+            
+            
 
 def check_winner(board: Board, symbol: str) -> bool:
     """
@@ -122,6 +178,8 @@ def check_winner(board: Board, symbol: str) -> bool:
     return False
 
 
+        
+
 def main() -> None:
     """
     Main loop to run the Tic-Tac-Toe game.
@@ -131,29 +189,47 @@ def main() -> None:
         # Initialize board
         board = [[str(3 * j + i + 1) for i in range(3)] for j in range(3)]
         display_board(board)
-
+        
         # Toss to decide first player
         result = toss()
         #print(f"Toss Winner: {result['toss_winner']}")
-        print(f"You: {result['user']} | Computer: {result['computer']}")
+        print(f"You: {result['user']} | Opponent: {result['opponent']}")
 
-        for _ in range(9):
-            if result['next_player'] == "COMPUTER":
-                computer_move(board, result['computer'])
-                print(f"You: {result['user']} | Computer: {result['computer']}")
+        for i in range(9):
+            if result['game_opponent'] == "COMPUTER":  # COMPUTER mode
+                if result['next_player'] == "COMPUTER":
+                    computer_move(board, result['opponent'])
+                    print(f"You: {result['user']} | Computer: {result['opponent']}")
 
-                if check_winner(board, result['computer']):
-                    print("🎉 Computer Won! 🎉")
-                    break
-                result['next_player'] = "USER"
-            else:
-                user_move(board, result['user'])
-                print(f"You: {result['user']} | Computer: {result['computer']}")
+                    if check_winner(board, result['computer']):
+                        print("🎉 Computer Won! 🎉")
+                        break
+                    result['next_player'] = "USER"
+                else:
+                    user_move(board, result['user'])
+                    print(f"You: {result['user']} | Computer: {result['opponent']}")
 
-                if check_winner(board, result['user']):
-                    print("🎉 You Won! 🎉")
-                    break
-                result['next_player'] = "COMPUTER"
+                    if check_winner(board, result['user']):
+                        print("🎉 You Won! 🎉")
+                        break
+                    result['next_player'] = "COMPUTER"
+            else:  # FRIEND mode
+                if result['next_player'] == "FRIEND":
+                    friend_move(board, result['opponent'])
+                    print(f"You: {result['user']} | Friend: {result['opponent']}")
+
+                    if check_winner(board, result['opponent']):
+                        print("🎉 Friend Won! 🎉")
+                        break
+                    result['next_player'] = "USER"
+                else:
+                    user_move(board, result['user'])
+                    print(f"You: {result['user']} | Friend: {result['opponent']}")
+
+                    if check_winner(board, result['user']):
+                        print("🎉 You Won! 🎉")
+                        break
+                    result['next_player'] = "FRIEND"
         else:
             print("It's a draw! 🤝")
 
@@ -164,4 +240,10 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# In[ ]:
+
+
+
 
